@@ -1,0 +1,34 @@
+name: Build & Test Panic Hub
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker images
+      run: docker compose build
+
+    - name: Run containers
+      run: docker compose up -d
+
+    - name: Check health endpoints
+      run: |
+        sleep 5
+        curl -f http://localhost:8000/health || exit 1
+
+    - name: Shut down containers
+      if: always()
+      run: docker compose down
