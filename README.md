@@ -126,7 +126,7 @@ panic-hub/
    └────────────────────┘
 
 👨‍🔬 Автор
-Digital WM / RolloErro
-💡 Telegram: @rolloerro
+Digital WM / RolloErro ( MSL72Rph)
+💡 Telegram: @MSL72Rph
 
 Made with ❤️ and calm mind — even during panic attacks.
