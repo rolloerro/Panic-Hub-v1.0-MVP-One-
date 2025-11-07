@@ -1,78 +1,132 @@
-# 🧠 Panic Hub v1.0 (MVP One)
+![Build Status](https://github.com/rolloerro/Panic-Hub-v1.0-MVP-One-/actions/workflows/docker-build.yml/badge.svg)
 
-**Panic Hub** — это единая точка маршрутизации для всех панических ботов проекта DWM.  
-Создан как лёгкий FastAPI-оркестратор с микросервисной архитектурой (Hub → Orchestrator → Bots).
+# 🧠 Panic Hub v1.0 (MVP-One)
+
+> **Distributed Microservice Hub** for coordinating panic-assistance bots — part of the **Digital WM Ecosystem** 🩺
 
 ---
 
-## 🚀 Архитектура
+## 🚀 Описание
 
-Client → Hub (FastAPI, port 8000)
-↓
-Orchestrator (port 8001)
-↓
-Panic Bots / Mock Bots (port 8002+)
+**Panic Hub** — это центральный узел (hub), объединяющий несколько Telegram-ботов для помощи при панических атаках.  
+Он построен по микросервисной архитектуре и включает три ключевых компонента:
 
-yaml
+| Компонент | Назначение |
+|------------|------------|
+| **Hub (FastAPI)** | Центральная точка входа, маршрутизация и API |
+| **Orchestrator** | Управление логикой и маршрутизация запросов между ботами |
+| **Mock Panic Bot** | Тестовый бот для отладки и демонстрации связей |
+
+---
+
+## 🧩 Архитектура
+```text
+┌────────────────────┐
+│      Hub API       │  ← http://localhost:8000
+└───────┬────────────┘
+        │
+        ▼
+┌────────────────────┐
+│   Orchestrator     │  ← http://localhost:8001
+└───────┬────────────┘
+        │
+        ▼
+┌────────────────────┐
+│  Panic Mock Bot    │  ← http://localhost:8002
+└────────────────────┘
+⚙️ Запуск проекта
+🐳 Через Docker Compose
+bash
 Копировать код
-
----
-
-## ⚙️ Компоненты
-
-| Сервис | Назначение | Порт |
-|--------|-------------|------|
-| **hub** | Точка входа API, маршрутизация запросов | 8000 |
-| **orchestrator** | Обработка и маршрутизация логики | 8001 |
-| **mock_panic_bot** | Тестовый бот для отладки пайплайна | 8002 |
-
----
-
-## 🧩 Запуск проекта
-
-```bash
-# Клонируй репозиторий
-git clone https://github.com/rolloerro/panic-hub.git
-cd panic-hub
-
-# Запусти контейнеры
 docker compose up --build
-После запуска:
+После сборки сервисы будут доступны:
 
-Hub доступен по адресу → http://localhost:8000
+Hub → http://localhost:8000
 
-Документация API → http://localhost:8000/docs
+Orchestrator → http://localhost:8001
 
-🧠 Цель MVP
-Создать устойчивую архитектуру для объединения всех panic-ботов:
+Mock Bot → http://localhost:8002
 
-panichelper_bot
+🧠 API Hub (Swagger UI)
+После запуска открой:
+👉 http://localhost:8000/docs
 
-iron_nerves_bot
+Доступные эндпоинты:
 
-net_panic_bot
+/ — приветственное сообщение
 
-panictab_bot
+/health — проверка состояния
 
-panic-checklist-bot
+/bots — список доступных ботов
 
-и других.
+/orchestrator — маршрутизация
 
-Каждый бот подключается как отдельный микросервис через orchestrator.
+🔄 CI/CD
+Проект включает GitHub Actions pipeline (.github/workflows/docker-build.yml),
+который автоматически:
 
-📦 Технологии
-Python 3.11
+Проверяет сборку контейнеров
 
-FastAPI
+Поднимает тестовую среду
 
-Docker Compose
+Проверяет endpoint /health
 
-Microservices pattern
+Завершает контейнеры
 
-🔒 Безопасность
-❗ Все токены и ключи исключены из сборки.
-Используется mock-бэкенд для теста пайплайна.
+📦 Структура проекта
+css
+Копировать код
+panic-hub/
+├── hub/
+│   ├── main.py
+│   └── Dockerfile
+├── orchestrator/
+│   ├── logic/
+│   │   └── intent_classifier.py
+│   └── Dockerfile
+├── mock_panic_bot/
+│   ├── main.py
+│   └── Dockerfile
+├── docker-compose.yml
+└── .github/workflows/docker-build.yml
+🧬 Roadmap
+✅ MVP v1.0 — базовый пайплайн с mock-ботом
+🔜 v2.0 — интеграция реальных ботов (Iron Nerves, PanicHelper и др.)
+🔜 v3.0 — подключение базы данных и логирования событий
+🔜 v4.0 — интеграция AI (NLP intent detection)
+┌──────────────────────────────┐
+│          Git Push            │
+│ (commit → GitHub main branch)│
+└──────────────┬───────────────┘
+               │
+               ▼
+      ┌────────────────┐
+      │  GitHub Action │
+      │ docker-build.yml │
+      └───────┬────────┘
+              │
+              ▼
+   ┌────────────────────┐
+   │  Build Containers  │
+   │ (Hub, Orchestrator,│
+   │  Mock Panic Bot)   │
+   └─────────┬──────────┘
+             │
+             ▼
+   ┌────────────────────┐
+   │  Run Integration   │
+   │     Tests          │
+   │   /health check    │
+   └─────────┬──────────┘
+             │
+             ▼
+   ┌────────────────────┐
+   │   CI Result Badge  │
+   │  ✅ Passed / ❌ Fail│
+   └────────────────────┘
 
-📘 Версия
-Panic Hub v1.0 (MVP One)
-— стабильная базовая версия хаба и пайплайна без внешних интеграций.
+👨‍🔬 Автор
+Digital WM / RolloErro
+💡 Telegram: @rolloerro
+
+Made with ❤️ and calm mind — even during panic attacks.
